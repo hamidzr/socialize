@@ -3,6 +3,12 @@ import os
 from os import listdir
 from os.path import isfile, join
 import cv2 # or PIL?
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--dryrun", type=bool, default=False, help="execute a dry run to test (doesn't actually post)")
+args = parser.parse_args()
+
 
 USER=os.environ.get('USER')
 PASS=os.environ.get('PASS')
@@ -21,8 +27,10 @@ def list_files(path):
 
 def post_image(img_path):
   ## returns True for success false otherwise
-  return True
-  o = subprocess.run(['insta-cli', '-u', USER, '-p', PASS, img_path], stdout=subprocess.PIPE)
+  print(f'posting {img_path}')
+  if (args.dryrun):
+    return True
+  o = subprocess.run(['instapy', '-u', USER, '-p', PASS, '-f', img_path, '-t', ''], stdout=subprocess.PIPE)
   return (o.returncode == 0)
 
 def square_image(img_path, size=None, pad=True, out_path=None):
