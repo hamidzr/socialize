@@ -1,2 +1,2 @@
-insta-cli
-cv2
+instapy-cli
+opencv-python
