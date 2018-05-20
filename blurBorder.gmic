@@ -1,0 +1,12 @@
+#@gmic call with arguments inputname -blurborder wpad,hpad,blur -o outputname
+#@gmic blurborder : add_border>0,blur_pixels>=0
+#@gmic : Add border created from stretched and blurred version of the entire image
+#@gmic : Default values: 'add_border=100', 'blur_pixels=add_border/2'
+blurborder :
+  wpad=${1=0}
+  hpad=${2=0}
+  blur=${3=50}
+  --blur[0] $blur
+  -resize[-1] {{0,w}+2*$wpad},{{-1,h}+2*$hpad}
+  -image[-1] [-2],$wpad,$hpad
+  -keep[-1]

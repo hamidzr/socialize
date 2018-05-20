@@ -4,6 +4,7 @@ posts one image at a time from a batch of images. Picks the biggest lexicographi
 ## Installation
 - install the requirements.txt
 - setup the environment variables `USER` `PASS` to your insta credentials
+- install `gmic` for blur padding effect
 
 ## TODO
 - option to set image caption
