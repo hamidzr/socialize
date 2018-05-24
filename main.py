@@ -8,6 +8,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dryrun", type=bool, default=False, help="execute a dry run to test (doesn't actually post)")
+parser.add_argument("--effect", type=str, default='white', help='pick the padding effect for images')
 args = parser.parse_args()
 
 
@@ -34,7 +35,7 @@ def post_image(img_path):
   o = subprocess.run(['instapy', '-u', USER, '-p', PASS, '-f', img_path, '-t', ''], stdout=subprocess.PIPE)
   return (o.returncode == 0)
 
-def square_image(img_path, size=None, pad=True, out_path=None):
+def square_image(img_path, size=None, pad=True, out_path=None, effect='white'):
   desired_size = size
   im_pth = img_path
 
@@ -51,17 +52,27 @@ def square_image(img_path, size=None, pad=True, out_path=None):
   top, bottom = delta_h//2, delta_h-(delta_h//2)
   left, right = delta_w//2, delta_w-(delta_w//2)
 
-  color = [255, 255, 255]
-  new_im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT,
-      value=color)
+  print('sides', top, right, bottom, left)
+  # TODO apply the desired effect
+  if (effect == 'white'):
+    color = [255, 255, 255]
+    new_im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT,
+        value=color)
 
-  if (out_path):
-    cv2.imwrite(out_path, new_im)
+    if (out_path):
+      cv2.imwrite(out_path, new_im)
+    else:
+      cv2.imshow("image", new_im)
+      cv2.waitKey(0)
+      cv2.destroyAllWindows()
+  elif (effect == 'blur'):
+    assert out_path != None, 'blur effect requires outpath'
+    cv2.imwrite(out_path, im)
+    o = subprocess.run(['gmic', 'blurBorder.gmic', out_path, '-blurborder',
+                        f'{right},{top},6', '-o', out_path],
+                       stdout=subprocess.PIPE)
   else:
-    cv2.imshow("image", new_im)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-  return new_im
+    raise Exception('unknown effect')
 
 def pick_image():
   ## picks an unposted image with the highest value name
@@ -78,7 +89,7 @@ def start():
   img_path = f'{topost_dir}/{img_name}'
   optimg_name = f'opt-{img_name}'
   optimg_path = f'{posted_dir}/{optimg_name}'
-  square_image(img_path, size=640, out_path=optimg_path)
+  square_image(img_path, size=640, out_path=optimg_path, effect=args.effect)
   if (post_image(optimg_path)):
     os.rename(img_path, f'{posted_dir}/{img_name}')
     print('posted image')
