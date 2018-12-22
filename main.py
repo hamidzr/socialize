@@ -27,12 +27,12 @@ def list_files(path):
   files = [f for f in listdir(path) if isfile(join(path, f))]
   return files
 
-def post_image(img_path):
+def post_image(img_path, caption=''):
   ## returns True for success false otherwise
   print(f'posting {img_path}')
   if (args.dryrun):
     return True
-  o = subprocess.run(['instapy', '-u', USER, '-p', PASS, '-f', img_path, '-t', ''], stdout=subprocess.PIPE)
+  o = subprocess.run(['instapy', '-u', USER, '-p', PASS, '-f', img_path, '-t', caption], stdout=subprocess.PIPE)
   return (o.returncode == 0)
 
 def square_image(img_path, size=None, pad=True, out_path=None, effect='white'):
@@ -90,7 +90,7 @@ def start():
   optimg_name = f'opt-{img_name}'
   optimg_path = f'{posted_dir}/{optimg_name}'
   square_image(img_path, size=640, out_path=optimg_path, effect=args.effect)
-  if (post_image(optimg_path)):
+  if (post_image(optimg_path, caption='#flashback')):
     os.rename(img_path, f'{posted_dir}/{img_name}')
     print('posted image')
   else:
