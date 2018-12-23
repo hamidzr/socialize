@@ -83,20 +83,22 @@ def pick_image():
   if (len(unposted_images) == 0): return None
   return unposted_images[0]
 
-def start():
+def send_one(caption=None):
+  caption = caption if caption != '' else '#flashback'
   img_name = pick_image();
   if (not img_name): raise Exception('No images left to post')
   img_path = f'{topost_dir}/{img_name}'
   optimg_name = f'opt-{img_name}'
   optimg_path = f'{posted_dir}/{optimg_name}'
   square_image(img_path, size=640, out_path=optimg_path, effect=args.effect)
-  if (post_image(optimg_path, caption='#flashback')):
+  if (post_image(optimg_path, caption=caption)):
     os.rename(img_path, f'{posted_dir}/{img_name}')
     print('posted image')
   else:
     print('failed to post image')
 
 
-start()
-
-# square_image('/home/hmd/dl/IMG_20180415_132440.jpg', size=100)
+if __name__ == '__main__':
+  print('ran directly')
+  send_one()
+  # square_image('IMG_20180415_132440.jpg', size=100)
