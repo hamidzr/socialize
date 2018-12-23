@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 import os
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import poster # local module
 import logging
+import time
 
 TOKEN = os.environ.get('BOT_TOKEN')
 TARGET_CHANNELS = os.environ.get('TARGET_CHANNELS').split(',')
@@ -40,10 +42,13 @@ def download_image(bot, update):
     photos = update.message.photo
     caption = update.message.caption
 
-  highest_quality_img = photos[-1].file_id
-  ifile = bot.get_file(highest_quality_img)
+  if caption == None: caption = ''
+
+  hq_image_id = photos[-1].file_id
+  ifile = bot.get_file(hq_image_id)
   logger.info('downloading image w/ caption ' + caption)
-  ifile.download('image.jpg')
+  ifile.download(f'images/to-post/z-channel-{int(time.time())}-{hq_image_id[:10]}.jpg')
+  poster.post_one(caption=caption)
 
 
 def echo(bot, update):

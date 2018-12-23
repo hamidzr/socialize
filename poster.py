@@ -5,6 +5,7 @@ from os import listdir
 from os.path import isfile, join
 import cv2 # or PIL?
 import argparse
+import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dryrun", type=bool, default=False, help="execute a dry run to test (doesn't actually post)")
@@ -83,7 +84,7 @@ def pick_image():
   if (len(unposted_images) == 0): return None
   return unposted_images[0]
 
-def send_one(caption=None):
+def post_one(caption=None):
   caption = caption if caption != None else '#flashback'
   img_name = pick_image();
   if (not img_name): raise Exception('No images left to post')
@@ -97,8 +98,14 @@ def send_one(caption=None):
   else:
     print('failed to post image')
 
+# dry run
+def fake_post(caption=None):
+  img_name = pick_image();
+  print(f'# fake posting {img_name} with caption {caption}')
+  time.sleep(2)
+  print(f'finished posting {img_name} with caption {caption}')
 
 if __name__ == '__main__':
   print('ran directly')
-  send_one()
+  post_one()
   # square_image('IMG_20180415_132440.jpg', size=100)
