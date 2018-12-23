@@ -8,7 +8,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--dryrun", type=bool, default=False, help="execute a dry run to test (doesn't actually post)")
-parser.add_argument("--effect", type=str, default='white', help='pick the padding effect for images')
+parser.add_argument("--effect", type=str, default='white', help='pick the padding effect for images: white or blur')
 args = parser.parse_args()
 
 
@@ -29,7 +29,7 @@ def list_files(path):
 
 def post_image(img_path, caption=''):
   ## returns True for success false otherwise
-  print(f'posting {img_path}')
+  print(f'posting {img_path} with caption {caption}')
   if (args.dryrun):
     return True
   o = subprocess.run(['instapy', '-u', USER, '-p', PASS, '-f', img_path, '-t', caption], stdout=subprocess.PIPE)
@@ -84,7 +84,7 @@ def pick_image():
   return unposted_images[0]
 
 def send_one(caption=None):
-  caption = caption if caption != '' else '#flashback'
+  caption = caption if caption != None else '#flashback'
   img_name = pick_image();
   if (not img_name): raise Exception('No images left to post')
   img_path = f'{topost_dir}/{img_name}'
